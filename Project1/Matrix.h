@@ -15,7 +15,7 @@ public:
 	~Matrix();
 	Matrix operator *(Matrix &rhs);
 	Matrix operator +(Matrix &rhs);
-	Matrix operator =(Matrix &rhs);
+	Matrix operator =(const Matrix &rhs);
 	int getrows() const;
 	int getcoulmns() const;
 	float get(int row, int coulmn);

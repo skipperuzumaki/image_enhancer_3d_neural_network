@@ -14,3 +14,14 @@ Network::Network(std::vector<std::pair<int, int>> arrangement)
 		Biases.push_back(Matrix(Layers.at(i).getrows(), Layers.at(i).getcoulmns));
 	}
 }
+
+Matrix Network::evaluate()
+{
+	for (int i = 0; i < Nlayers-1; i++) {
+		Matrix T1 = Layers.at(i) * WeightsA.at(i);
+		Matrix T2 = WeightsB.at(i) * T1;
+		Matrix T3 = T2 + Biases.at(i + 1);
+		Layers.at(i + 1) = T3;
+	}
+	return Layers.at(Nlayers - 1);
+}

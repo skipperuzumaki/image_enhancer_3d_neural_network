@@ -83,7 +83,7 @@ Matrix Matrix::operator+(Matrix & rhs)
 	return rtn;
 }
 
-Matrix Matrix::operator=(Matrix & rhs)
+Matrix Matrix::operator=(const Matrix & rhs)
 {
 	row = rhs.row;
 	coulmn = rhs.coulmn;

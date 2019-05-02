@@ -11,4 +11,5 @@ private:
 	std::vector<Matrix> Biases;
 public:
 	Network(std::vector<std::pair<int,int>> arrangement);
+	Matrix evaluate();
 };
