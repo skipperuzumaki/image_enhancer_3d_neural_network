@@ -144,24 +144,3 @@ float Matrix::dot(Matrix & rhs)
 	}
 	return retn;
 }
-
-int main() {
-	Matrix m = Matrix(2, 2);
-	m.put(0, 0, 0);
-	m.put(1, 0, 1);
-	m.put(0, 1, 2);
-	m.put(1, 1, 3);
-	Matrix k = Matrix(2, 2);
-	k.put(0, 0, 1);
-	k.put(1, 0, 3);
-	k.put(0, 1, 5);
-	k.put(1, 1, 1);
-	Matrix z = m * k;
-	m.print();
-	printf("\n");
-	k.print();
-	printf("\n");
-	z.print();
-	scanf_s("%d");
-	return 0;
-}
