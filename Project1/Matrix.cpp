@@ -95,6 +95,21 @@ Matrix Matrix::operator=(const Matrix & rhs)
 	return *this;
 }
 
+bool Matrix::operator==(const Matrix & rhs)
+{
+	if (row != rhs.row || coulmn != rhs.coulmn) {
+		return false;
+	}
+	else {
+		for (int i = 0; i < row*coulmn; i++) {
+			if (start[i] != rhs.start[i]) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 
 int Matrix::getrows() const
 {
@@ -167,12 +182,17 @@ float Matrix::Maxval()
 	return rtn;
 }
 
-Matrix Matrix::Percentise(int maxval)
+void Matrix::Percentise(int maxval)
 {
-	Matrix rtn = Matrix(row, coulmn);
 	for (int i = 0; i < row*coulmn; i++) {
 		float k = (start[i] / maxval)*100.0f;
-		rtn.start[i] = k;
+		start[i] = k;
 	}
-	return rtn;
+}
+
+void Matrix::Setall(float val)
+{
+	for (int i = 0; i < row*coulmn; i++) {
+		start[i] = val;
+	}
 }

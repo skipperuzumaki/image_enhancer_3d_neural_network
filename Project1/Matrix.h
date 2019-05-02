@@ -16,6 +16,7 @@ public:
 	Matrix operator *(Matrix &rhs);
 	Matrix operator +(Matrix &rhs);
 	Matrix operator =(const Matrix &rhs);
+	bool operator ==(const Matrix &rhs);
 	int getrows() const;
 	int getcoulmns() const;
 	float get(int row, int coulmn);
@@ -24,5 +25,6 @@ public:
 	float dot(Matrix &rhs);
 	Matrix CalcVariance(Matrix &rhs);
 	float Maxval();
-	Matrix Percentise(int maxval);
+	void Percentise(int maxval);
+	void Setall(float val);
 };

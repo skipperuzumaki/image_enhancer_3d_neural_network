@@ -13,5 +13,6 @@ private:
 public:
 	Network(std::vector<std::pair<int,int>> arrangement);
 	Matrix evaluate();
-	void CalcCost(Matrix DesiredOutput);
+	void CalcCostLayers(Matrix DesiredOutput, int stage);
+	std::pair<std::pair<int, int>, std::pair<int, int>> Getaw(std::pair<int, int> el1, std::pair<int, int> el2);
 };
