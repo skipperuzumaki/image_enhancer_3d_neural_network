@@ -27,4 +27,5 @@ public:
 	float Maxval();
 	void Percentise(int maxval);
 	void Setall(float val);
+	Matrix Invert();
 };

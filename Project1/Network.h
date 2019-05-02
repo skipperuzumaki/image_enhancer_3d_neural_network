@@ -13,6 +13,7 @@ private:
 public:
 	Network(std::vector<std::pair<int,int>> arrangement);
 	Matrix evaluate();
-	void CalcCostLayers(Matrix DesiredOutput, int stage);
+	void CalcCost(Matrix DesiredOutput, int stage);
 	std::pair<std::pair<int, int>, std::pair<int, int>> Getaw(std::pair<int, int> el1, std::pair<int, int> el2);
+	std::vector<std::pair<int, int>> Bakval(bool A, int i, int j,int extntr,int extntc);
 };

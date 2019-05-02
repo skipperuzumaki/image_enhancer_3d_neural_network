@@ -196,3 +196,12 @@ void Matrix::Setall(float val)
 		start[i] = val;
 	}
 }
+
+Matrix Matrix::Invert()
+{
+	Matrix rtn = Matrix(row, coulmn);
+	for (int i = 0; i < row*coulmn; i++) {
+		rtn.start[i] = -start[i];
+	}
+	return rtn;
+}

@@ -9,7 +9,6 @@ Network::Network(std::vector<std::pair<int, int>> arrangement)
 		Layers.push_back(Matrix(arrangement.at(i).first, arrangement.at(i).second));
 	}
 	Cost.push_back(Layers);
-	Biases.push_back(Matrix(0, 0));
 	for (int i = 1; i < Nlayers; i++) {
 		WeightsA.push_back(Matrix(Layers.at(i - 1).getcoulmns(), Layers.at(i).getrows()));
 		WeightsB.push_back(Matrix(Layers.at(i).getrows(), Layers.at(i - 1).getcoulmns()));
@@ -31,7 +30,7 @@ Matrix Network::evaluate()
 	return Layers.at(Nlayers - 1);
 }
 
-void Network::CalcCostLayers(Matrix DesiredOutput, int stage)
+void Network::CalcCost(Matrix DesiredOutput, int stage)
 {
 	if (stage==1) {
 		return;
@@ -53,9 +52,46 @@ void Network::CalcCostLayers(Matrix DesiredOutput, int stage)
 			}
 		}
 	}
+	Cost.at(3).at(stage - 1) = Cost.at(0).at(stage).Invert();
+	Cost.at(0).at(stage - 1).Setall(1.0f);
+	for (int i = 0; i < Cost.at(1).at(stage - 1).getrows(); i++) {
+		for (int j = 0; j < Cost.at(1).at(stage - 1).getcoulmns(); j++) {
+			auto k = Bakval(true, i, j, Cost.at(1).at(stage - 1).getrows(), Cost.at(1).at(stage - 1).getcoulmns());
+			for (int l = 0; l < k.size(); l++) {
+				Cost.at(0).at(stage - 1).put(k.at(i).first, k.at(i).second, Cost.at(0).at(stage - 1).get(k.at(i).first, k.at(i).second)*Cost.at(1).at(stage - 1).get(i, j));
+			}
+		}
+	}
+	for (int i = 0; i < Cost.at(2).at(stage - 1).getrows(); i++) {
+		for (int j = 0; j < Cost.at(2).at(stage - 1).getcoulmns(); j++) {
+			auto k = Bakval(true, i, j, Cost.at(2).at(stage - 1).getrows(), Cost.at(2).at(stage - 1).getcoulmns());
+			for (int l = 0; l < k.size(); l++) {
+				Cost.at(0).at(stage - 1).put(k.at(i).first, k.at(i).second, Cost.at(0).at(stage - 1).get(k.at(i).first, k.at(i).second)*Cost.at(2).at(stage - 1).get(i, j));
+			}
+		}
+	}
+	CalcCost(Cost.at(0).at(stage - 1), stage - 1);
 }
 
 std::pair<std::pair<int, int>, std::pair<int, int>> Network::Getaw(std::pair<int, int> el1, std::pair<int, int> el2)
 {
 	return std::make_pair(std::make_pair(el1.second, el2.second), std::make_pair(el2.first, el1.first));
 }
+
+std::vector<std::pair<int, int>> Network::Bakval(bool A, int i, int j, int extntr,int extntc)
+{
+	std::vector<std::pair<int, int>> rtn;
+	if (A) {
+		for (int il = 0; il < extntr; il++) {
+			rtn.push_back(std::make_pair(il, i));
+		}
+	}
+	else {
+		for (int il = 0; il < extntc; il++) {
+			rtn.push_back(std::make_pair(j, il));
+		}
+	}
+	return rtn;
+}
+
+
