@@ -61,12 +61,12 @@ Matrix Matrix::operator*(Matrix & rhs)
 	for (int i = 0; i < x; i++) {
 		for (int j = 0; j < y; j++) {
 			Matrix row_t = bringrow(i);
-			Matrix coulmn_t = bringcoulmn(j);
+			Matrix coulmn_t = rhs.bringcoulmn(j);
 			float value = row_t.dot(coulmn_t);
 			rtn.put(i, j, value);
 		}
 	}
-
+	return rtn;
 }
 
 Matrix Matrix::operator+(Matrix & rhs)
@@ -157,9 +157,11 @@ int main() {
 	k.put(0, 1, 5);
 	k.put(1, 1, 1);
 	Matrix z = m * k;
-	z.print();
 	m.print();
+	printf("\n");
 	k.print();
+	printf("\n");
+	z.print();
 	scanf_s("%d");
 	return 0;
 }
