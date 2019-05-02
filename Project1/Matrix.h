@@ -22,4 +22,7 @@ public:
 	void put(int row, int coulmn, float value);
 	void print();
 	float dot(Matrix &rhs);
+	Matrix CalcVariance(Matrix &rhs);
+	float Maxval();
+	Matrix Percentise(int maxval);
 };

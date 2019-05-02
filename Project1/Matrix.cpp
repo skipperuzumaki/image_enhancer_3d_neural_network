@@ -144,3 +144,35 @@ float Matrix::dot(Matrix & rhs)
 	}
 	return retn;
 }
+
+Matrix Matrix::CalcVariance(Matrix & rhs)
+{
+	assert(rhs.row == row);
+	assert(rhs.coulmn == coulmn);
+	Matrix rtn = Matrix(row, coulmn);
+	for (int i = 0; i < row*coulmn; i++) {
+		rtn.start[i] = rhs.start[i] - start[i];
+	}
+	return rtn;
+}
+
+float Matrix::Maxval()
+{
+	float rtn = std::numeric_limits<float>::min();
+	for (int i = 0; i < row*coulmn; i++) {
+		if (start[i] > rtn) {
+			rtn = start[i];
+		}
+	}
+	return rtn;
+}
+
+Matrix Matrix::Percentise(int maxval)
+{
+	Matrix rtn = Matrix(row, coulmn);
+	for (int i = 0; i < row*coulmn; i++) {
+		float k = (start[i] / maxval)*100.0f;
+		rtn.start[i] = k;
+	}
+	return rtn;
+}
