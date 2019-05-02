@@ -6,7 +6,7 @@ Matrix Matrix::bringrow(int row)
 {
 	Matrix ret = Matrix(1, getcoulmns());
 	for (int i = 0; i < getcoulmns(); i++) {
-		ret.put(0, i, get(row, i));
+		ret.start[i] = start[row*getcoulmns() + i];
 	}
 	return ret;
 }
@@ -15,7 +15,7 @@ Matrix Matrix::bringcoulmn(int coulmn)
 {
 	Matrix ret = Matrix(getrows(),1);
 	for (int i = 0; i < getrows(); i++) {
-		ret.put(i,0, get(i,coulmn));
+		ret.start[i] = start[i*getrows() + coulmn];
 	}
 	return ret;
 }
@@ -27,34 +27,33 @@ int Matrix::lenght()
 
 Matrix::Matrix(int rows, int coulmns)
 {
+	assert(rows != 0 && coulmns != 0);
 	row = rows;
 	coulmn = coulmns;
-	for (int i = 0; i < row; i++) {
-		std::vector<float> temp;
-		for (int j = 0; j < coulmn; j++) {
-			temp.push_back(0.0f);
-		}
-		temp.shrink_to_fit();
-		data.push_back(temp);
-	}
-	data.shrink_to_fit();
+	start = new float[row*coulmn];
 }
 
 Matrix::Matrix(const Matrix &rhs)
-	:
-	Matrix(rhs.getrows(), rhs.getcoulmns())
 {
-	data = rhs.data;
+	row = rhs.getrows();
+	coulmn = rhs.getcoulmns();
+	delete[] start;
+	start = new float[row*coulmn];
+	for (int i = 0; i < row*coulmn; i++) {
+		start[i] = rhs.start[i];
+	}
 }
 
 Matrix::~Matrix()
 {
-	data.clear();
+	delete[] start;
+	start = nullptr;
 }
 
 Matrix Matrix::operator*(Matrix & rhs)
 {
 	if (getcoulmns() != rhs.getrows()) {
+		return Matrix(0, 0);
 	}
 	int x = getrows();
 	int y = rhs.getcoulmns();
@@ -63,19 +62,17 @@ Matrix Matrix::operator*(Matrix & rhs)
 		for (int j = 0; j < y; j++) {
 			Matrix row_t = bringrow(i);
 			Matrix coulmn_t = bringcoulmn(j);
-			float value = 0;
-			for (int k = 0; k < row_t.lenght(); k++) {
-				value += row_t.get(0, k)*coulmn_t.get(k, 0);
-			}
+			float value = row_t.dot(coulmn_t);
 			rtn.put(i, j, value);
 		}
 	}
-	return rtn;
+
 }
 
 Matrix Matrix::operator+(Matrix & rhs)
 {
 	if ((getrows() != rhs.getrows()) || (getcoulmns() != rhs.getcoulmns())) {
+		return Matrix(0, 0);
 	}
 	Matrix rtn = Matrix(getrows(), getcoulmns());
 	for (int ix = 0; ix < getrows(); ix++) {
@@ -84,6 +81,18 @@ Matrix Matrix::operator+(Matrix & rhs)
 		}
 	}
 	return rtn;
+}
+
+Matrix Matrix::operator=(Matrix & rhs)
+{
+	row = rhs.row;
+	coulmn = rhs.coulmn;
+	delete[] start;
+	start = new float[row*coulmn];
+	for (int i = 0; i < row*coulmn; i++) {
+		start[i] = rhs.start[i];
+	}
+	return *this;
 }
 
 
@@ -97,18 +106,43 @@ int Matrix::getcoulmns() const
 	return coulmn;
 }
 
-float Matrix::get(int row, int coulmn)
+float Matrix::get(int rows, int coulmns)
 {
-	assert(row < getrows());
-	assert(coulmn < getcoulmns());
-	return data.at(row).at(coulmn);
+	assert(rows < row);
+	assert(coulmns < coulmn);
+	return start[rows*coulmn + coulmns];
 }
 
-void Matrix::put(int row, int coulmn, float value)
+void Matrix::put(int rows, int coulmns, float value)
 {
-	assert(row < getrows());
-	assert(coulmn < getcoulmns());
-	data.at(row).at(coulmn) = value;
+	assert(rows < row);
+	assert(coulmns < coulmn);
+	start[rows*coulmn + coulmns] = value;
+}
+
+void Matrix::print()
+{
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < coulmn; j++) {
+			float m = get(i,j);
+			printf("%f,", m);
+		}
+		printf("\n");
+	}
+}
+
+float Matrix::dot(Matrix & rhs)
+{
+	assert(row == 1);
+	assert(rhs.coulmn == 1);
+	assert(coulmn == rhs.row);
+	float retn = 0;
+	for (int i = 0; i < coulmn; i++) {
+		float q = 1;
+		q = start[i] * rhs.start[i];
+		retn = retn + q;
+	}
+	return retn;
 }
 
 int main() {
@@ -116,19 +150,16 @@ int main() {
 	m.put(0, 0, 0);
 	m.put(1, 0, 1);
 	m.put(0, 1, 2);
-	m.put(1, 0, 3);
+	m.put(1, 1, 3);
 	Matrix k = Matrix(2, 2);
-	k.put(0, 0, 0);
+	k.put(0, 0, 1);
 	k.put(1, 0, 3);
-	k.put(0, 1, 1);
-	k.put(1, 0, 3);
+	k.put(0, 1, 5);
+	k.put(1, 1, 1);
 	Matrix z = m * k;
-	for (int i = 0; i < 2; i ++ ) {
-		for (int j = 0; j < 2; j++) {
-			float m = z.get(i, j);
-			printf("%f,", m);
-		}
-	}
+	z.print();
+	m.print();
+	k.print();
 	scanf_s("%d");
 	return 0;
 }
