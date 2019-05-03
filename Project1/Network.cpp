@@ -9,6 +9,7 @@ Network::Network(std::vector<std::pair<int, int>> arrangement)
 		Layers.push_back(Matrix(arrangement.at(i).first, arrangement.at(i).second));
 	}
 	Cost.push_back(Layers);
+	Biases.push_back(Matrix(0, 0));
 	for (int i = 1; i < Nlayers; i++) {
 		WeightsA.push_back(Matrix(Layers.at(i - 1).getcoulmns(), Layers.at(i).getrows()));
 		WeightsB.push_back(Matrix(Layers.at(i).getrows(), Layers.at(i - 1).getcoulmns()));
@@ -54,7 +55,7 @@ void Network::CalcCostDerivative(Matrix DesiredOutput, int stage)
 			}
 		}
 	}
-	Cost.at(3).at(stage - 1) = Cost.at(0).at(stage).Invert();
+	Cost.at(3).at(stage) = Cost.at(0).at(stage).Invert();
 	Cost.at(0).at(stage - 1).Setall(0.0f);
 	for (int i = 0; i < Cost.at(1).at(stage - 1).getrows(); i++) {
 		for (int j = 0; j < Cost.at(1).at(stage - 1).getcoulmns(); j++) {
@@ -73,6 +74,19 @@ void Network::CalcCostDerivative(Matrix DesiredOutput, int stage)
 		}
 	}
 	CalcCostDerivative(Cost.at(0).at(stage - 1), stage - 1);
+}
+
+float Network::CalcCost(Matrix DesiredOutput)
+{
+	float rtn = 0.0f;
+	Matrix T = Layers.at(Nlayers-1).CalcVariance(DesiredOutput);
+	for (int i = 0; i < T.getrows(); i++) {
+		for (int j = 0; j < T.getcoulmns(); j++) {
+			rtn = rtn + (T.get(i, j)*T.get(i, j));
+		}
+	}
+	rtn = rtn / (T.getrows()*T.getcoulmns());
+	return std::sqrt(rtn);
 }
 
 std::pair<std::pair<int, int>, std::pair<int, int>> Network::Getaw(std::pair<int, int> el1, std::pair<int, int> el2)
@@ -96,8 +110,26 @@ std::vector<std::pair<int, int>> Network::Bakval(bool A, int i, int j, int extnt
 	return rtn;
 }
 
-void Network::backprop()
+void Network::backprop(int cost)
 {
+	delta = cost / 10;
+	for (int l = 0; l < Nlayers; l++) {
+		for (int i = 0; i < Biases.at(l).getrows(); i++) {
+			for (int j = 0; j < Biases.at(l).getcoulmns(); j++) {
+				Biases.at(l).put(i, j, Biases.at(l).get(i, j) + Cost.at(3).at(l).get(1, j)*delta);
+			}
+		}
+		for (int i = 0; i < WeightsA.at(l).getrows(); i++) {
+			for (int j = 0; j < WeightsA.at(l).getcoulmns(); j++) {
+				WeightsA.at(l).put(i, j, WeightsA.at(l).get(i, j) + Cost.at(1).at(l).get(1, j)*delta);
+			}
+		}
+		for (int i = 0; i < WeightsB.at(l).getrows(); i++) {
+			for (int j = 0; j < WeightsB.at(l).getcoulmns(); j++) {
+				WeightsB.at(l).put(i, j, WeightsB.at(l).get(i, j) + Cost.at(1).at(l).get(1, j)*delta);
+			}
+		}
+	}
 }
 
 
