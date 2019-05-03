@@ -12,7 +12,7 @@ private:
 	std::vector<Matrix> Biases;
 	std::vector<std::vector<Matrix>> Cost;
 public:
-	Network(std::vector<std::pair<int,int>> arrangement);
+	Network(std::vector<std::pair<int, int>> arrangement, int range);
 	Matrix evaluate();
 	void CalcCostDerivative(Matrix DesiredOutput, int stage);
 	float CalcCost(Matrix DesiredOutput);

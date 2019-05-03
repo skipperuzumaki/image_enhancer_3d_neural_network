@@ -30,4 +30,5 @@ public:
 	Matrix Invert();
 	void Sigmoid();
 	void Normalise();
+	void RandomlyInitialise(float range);
 };

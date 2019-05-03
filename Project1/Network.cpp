@@ -1,7 +1,7 @@
 #include "Network.h"
 #include <cassert>
 
-Network::Network(std::vector<std::pair<int, int>> arrangement)
+Network::Network(std::vector<std::pair<int, int>> arrangement,int range)
 {
 	Nlayers = arrangement.size();
 	Layers.clear();
@@ -11,9 +11,15 @@ Network::Network(std::vector<std::pair<int, int>> arrangement)
 	Cost.push_back(Layers);
 	Biases.push_back(Matrix(0, 0));
 	for (int i = 1; i < Nlayers; i++) {
-		WeightsA.push_back(Matrix(Layers.at(i - 1).getcoulmns(), Layers.at(i).getrows()));
-		WeightsB.push_back(Matrix(Layers.at(i).getrows(), Layers.at(i - 1).getcoulmns()));
-		Biases.push_back(Matrix(Layers.at(i).getrows(), Layers.at(i).getcoulmns));
+		Matrix T1 = Matrix(Layers.at(i - 1).getcoulmns(), Layers.at(i).getrows());
+		T1.RandomlyInitialise(range);
+		WeightsA.push_back(T1);
+		Matrix T2 = Matrix(Layers.at(i).getrows(), Layers.at(i - 1).getcoulmns());
+		T2.RandomlyInitialise(range);
+		WeightsB.push_back(T2);
+		Matrix T3 = Matrix(Layers.at(i).getrows(), Layers.at(i).getcoulmns);
+		T3.RandomlyInitialise(range);
+		Biases.push_back(T3);
 	}
 	Cost.push_back(WeightsA);
 	Cost.push_back(WeightsB);

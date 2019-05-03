@@ -1,6 +1,8 @@
 #include "Matrix.h"
 #include <cstdio>
 #include <cassert>
+#include <ctime>
+#include <cstdlib>
 
 Matrix Matrix::bringrow(int row)
 {
@@ -217,5 +219,14 @@ void Matrix::Normalise()
 {
 	for (int i = 0; i < row*coulmn; i++) {
 		start[i] = (start[i] + 1) / 2;
+	}
+}
+
+void Matrix::RandomlyInitialise(float range)
+{
+	srand(time(0));
+	for (int i = 0; i < row*coulmn; i++) {
+		int r = rand() % int(range * 2) - range;
+		start[i] = float(r);
 	}
 }
