@@ -184,7 +184,7 @@ float Matrix::Maxval()
 	return rtn;
 }
 
-void Matrix::Percentise(int maxval)
+void Matrix::Percentise(float maxval)
 {
 	for (int i = 0; i < row*coulmn; i++) {
 		float k = (start[i] / maxval)*100.0f;
@@ -211,22 +211,15 @@ Matrix Matrix::Invert()
 void Matrix::Sigmoid()
 {
 	for (int i = 0; i < row*coulmn; i++) {
-		start[i] = std::tanh(start[i]);
-	}
-}
-
-void Matrix::Normalise()
-{
-	for (int i = 0; i < row*coulmn; i++) {
-		start[i] = (start[i] + 1) / 2;
+		start[i] = std::pow((1+std::exp(-start[i])),-1);
 	}
 }
 
 void Matrix::RandomlyInitialise(float range)
 {
-	srand(time(0));
+	srand(int(time(0)));
 	for (int i = 0; i < row*coulmn; i++) {
-		int r = rand() % int(range * 2) - range;
+		int r = rand() % (int(range) * 2) - int(range);
 		start[i] = float(r);
 	}
 }

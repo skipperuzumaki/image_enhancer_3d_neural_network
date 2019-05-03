@@ -1,9 +1,9 @@
 #include "Network.h"
 #include <cassert>
 
-Network::Network(std::vector<std::pair<int, int>> arrangement,int range)
+Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
 {
-	Nlayers = arrangement.size();
+	Nlayers = int(arrangement.size());
 	Layers.clear();
 	for (int i = 0; i < Nlayers; i++) {
 		Layers.push_back(Matrix(arrangement.at(i).first, arrangement.at(i).second));
@@ -17,7 +17,7 @@ Network::Network(std::vector<std::pair<int, int>> arrangement,int range)
 		Matrix T2 = Matrix(Layers.at(i).getrows(), Layers.at(i - 1).getcoulmns());
 		T2.RandomlyInitialise(range);
 		WeightsB.push_back(T2);
-		Matrix T3 = Matrix(Layers.at(i).getrows(), Layers.at(i).getcoulmns);
+		Matrix T3 = Matrix(Layers.at(i).getrows(), Layers.at(i).getcoulmns());
 		T3.RandomlyInitialise(range);
 		Biases.push_back(T3);
 	}
@@ -33,7 +33,6 @@ Matrix Network::evaluate()
 		Matrix T2 = WeightsB.at(i) * T1;
 		Matrix T3 = T2 + Biases.at(i + 1);
 		T3.Sigmoid();
-		T3.Normalise();
 		Layers.at(i + 1) = T3;
 	}
 	return Layers.at(Nlayers - 1);
@@ -50,7 +49,7 @@ void Network::CalcCostDerivative(Matrix DesiredOutput, int stage)
 	Cost.at(2).at(stage-1).Setall(0.0f);
 	for (int i = 0; i < Layers.at(stage - 1).getrows(); i++) {
 		for (int j = 0; j < Layers.at(stage - 1).getcoulmns(); j++) {
-			for (int k = 0; k < Cost.at(0).at(stage).getrows; k++) {
+			for (int k = 0; k < Cost.at(0).at(stage).getrows(); k++) {
 				for (int l = 0; l < Cost.at(0).at(stage).getcoulmns(); l++) {
 					auto W = Getaw(std::make_pair(i, j), std::make_pair(k, l));
 					Cost.at(1).at(stage - 1).put(W.first.first, W.first.second, Cost.at(1).at(stage - 1).get(W.first.first, W.first.second)+Cost.at(0).at(stage).get(k, l));
@@ -116,7 +115,7 @@ std::vector<std::pair<int, int>> Network::Bakval(bool A, int i, int j, int extnt
 	return rtn;
 }
 
-void Network::backprop(int cost)
+void Network::backprop(float cost)
 {
 	delta = cost / 10;
 	for (int l = 0; l < Nlayers; l++) {

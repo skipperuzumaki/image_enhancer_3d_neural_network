@@ -25,10 +25,9 @@ public:
 	float dot(Matrix &rhs);
 	Matrix CalcVariance(Matrix &rhs);
 	float Maxval();
-	void Percentise(int maxval);
+	void Percentise(float maxval);
 	void Setall(float val);
 	Matrix Invert();
 	void Sigmoid();
-	void Normalise();
 	void RandomlyInitialise(float range);
 };
