@@ -205,3 +205,17 @@ Matrix Matrix::Invert()
 	}
 	return rtn;
 }
+
+void Matrix::Sigmoid()
+{
+	for (int i = 0; i < row*coulmn; i++) {
+		start[i] = std::tanh(start[i]);
+	}
+}
+
+void Matrix::Normalise()
+{
+	for (int i = 0; i < row*coulmn; i++) {
+		start[i] = (start[i] + 1) / 2;
+	}
+}

@@ -28,4 +28,6 @@ public:
 	void Percentise(int maxval);
 	void Setall(float val);
 	Matrix Invert();
+	void Sigmoid();
+	void Normalise();
 };
