@@ -6,16 +6,17 @@
 
 using namespace std;
 
-vector<Matrix> read_video(string filename,pair<int,int> dimensions) {
+std::pair<vector<Matrix>,int> read_video(string filename,pair<int,int> dimensions) {
 	vector<Matrix> frames;
+	int nframes;
 	try {
 		//open the video file
 		cv::VideoCapture cap(filename); // open the video file
 		if (!cap.isOpened()) {  // check if we succeeded
 			CV_Error(CV_StsError, "Can not open Video file");
 		}
-		//cap.get(CV_CAP_PROP_FRAME_COUNT) contains the number of frames in the video;
-		for (int frameNum = 0; frameNum < cap.get(CV_CAP_PROP_FRAME_COUNT); frameNum++)
+		nframes = cap.get(CV_CAP_PROP_FRAME_COUNT);
+		for (int frameNum = 0; frameNum < nframes; frameNum++)
 		{
 			cv::Mat frame;
 			Matrix Frame = Matrix(dimensions.first, dimensions.second);
@@ -34,5 +35,5 @@ vector<Matrix> read_video(string filename,pair<int,int> dimensions) {
 		cerr << e.msg << endl;
 		exit(1);
 	}
-	return frames;
+	return std::make_pair(frames,nframes);
 }

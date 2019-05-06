@@ -1,6 +1,10 @@
 #include "Network.h"
-#include"VideoHandler.h"
 #include <cassert>
+
+void Network::instantialise(Matrix init)
+{
+	Layers.at(0) = init;
+}
 
 Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
 {
