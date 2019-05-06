@@ -1,4 +1,5 @@
 #include "Network.h"
+#include"VideoHandler.h"
 #include <cassert>
 
 Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
@@ -136,5 +137,4 @@ void Network::backprop(float cost)
 		}
 	}
 }
-
 
