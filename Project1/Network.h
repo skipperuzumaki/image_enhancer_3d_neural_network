@@ -13,6 +13,7 @@ private:
 public:
 	int Nlayers;
 	Network(std::vector<std::pair<int, int>> arrangement, float range);
+	Network(const Network &rhs);
 	Matrix evaluate();
 	void CalcCostDerivative(Matrix DesiredOutput, int stage);
 	float CalcCost(Matrix DesiredOutput);
@@ -20,4 +21,6 @@ public:
 	std::vector<std::pair<int, int>> Bakval(bool A, int i, int j,int extntr,int extntc);
 	void backprop(float cost);
 	void instantialise(Matrix init);
+	void save();
+	void load();
 };

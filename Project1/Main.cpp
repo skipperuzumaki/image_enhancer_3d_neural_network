@@ -18,6 +18,7 @@ int main()
 	arrangement.push_back(std::make_pair(1280, 720));
 	arrangement.push_back(std::make_pair(1920, 1080));
 	Network net = Network(arrangement, 50.0f);
+	net.load();
 	for (int i_ = 0; i_ < 500; i_++) {
 		for (int i = 0; i < input.size(); i++) {
 			net.instantialise(input.at(i));
@@ -26,6 +27,7 @@ int main()
 			net.backprop(net.CalcCost(output.at(i)));
 		}
 		printf("epoch number %d done", i_);
+		net.save();
 	}
 	return 0;
 }

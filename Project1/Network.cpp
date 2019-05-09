@@ -8,6 +8,29 @@ void Network::instantialise(Matrix init)
 	Layers.at(0) = init;
 }
 
+void Network::save()
+{
+	std::ofstream file;
+	remove("train.bat");
+	file.open("train.bat", std::ios::app);
+	file.write((char*)this, sizeof(this));
+}
+
+void Network::load()
+{
+	std::vector<std::pair<int, int>> arr;
+	arr.push_back(std::make_pair(0, 0));
+	Network temp = Network(arr, 1);
+	std::ifstream file;
+	file.open("train.bat", std::ios::in);
+	file.read((char*)&temp, sizeof(file));
+	Nlayers = temp.Nlayers;
+	Layers = temp.Layers;
+	WeightsA = temp.WeightsA;
+	WeightsB = temp.WeightsB;
+	Biases = temp.Biases;
+}
+
 Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
 {
 	Nlayers = int(arrangement.size());
@@ -31,6 +54,15 @@ Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
 	Cost.push_back(WeightsA);
 	Cost.push_back(WeightsB);
 	Cost.push_back(Biases);
+}
+
+Network::Network(const Network & rhs)
+{
+	Nlayers = rhs.Nlayers;
+	Layers = rhs.Layers;
+	WeightsA = rhs.WeightsA;
+	WeightsB = rhs.WeightsB;
+	Biases = rhs.Biases;
 }
 
 Matrix Network::evaluate()
