@@ -19,4 +19,5 @@ public:
 	std::pair<std::pair<int, int>, std::pair<int, int>> Getaw(std::pair<int, int> el1, std::pair<int, int> el2);
 	std::vector<std::pair<int, int>> Bakval(bool A, int i, int j,int extntr,int extntc);
 	void backprop(float cost);
+	void instantialise(Matrix init);
 };

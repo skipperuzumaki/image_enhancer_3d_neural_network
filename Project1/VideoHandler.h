@@ -6,6 +6,18 @@
 
 using namespace std;
 
+Matrix frametomatrix(cv::Mat frame, pair<int, int> dimensions) {
+	cv::Mat greyscale;
+	Matrix Frame = Matrix(dimensions.first, dimensions.second);
+	cv::cvtColor(frame, greyscale, CV_RGB2GRAY);
+	for (int i = 0; i < dimensions.first; i++) {
+		for (int j = 0; j < dimensions.second; j++) {
+			Frame.put(i, j, float(greyscale.at<int>(i, j)));
+		}
+	}
+	return Frame;
+}
+
 vector<Matrix> read_video(string filename,pair<int,int> dimensions) {
 	vector<Matrix> frames;
 	try {
@@ -18,15 +30,8 @@ vector<Matrix> read_video(string filename,pair<int,int> dimensions) {
 		for (int frameNum = 0; frameNum < cap.get(CV_CAP_PROP_FRAME_COUNT); frameNum++)
 		{
 			cv::Mat frame;
-			Matrix Frame = Matrix(dimensions.first, dimensions.second);
 			cap >> frame; // get the next frame from video
-			cv::Mat greyscale;
-			cv::cvtColor(frame, greyscale, CV_RGB2GRAY);
-			for (int i = 0; i < dimensions.first; i++) {
-				for (int j = 0; j < dimensions.second; j++) {
-					Frame.put(i, j, float(greyscale.at<int>(i, j)));
-				}
-			}
+			auto Frame = frametomatrix(frame, dimensions);
 			frames.push_back(Frame);
 		}
 	}
