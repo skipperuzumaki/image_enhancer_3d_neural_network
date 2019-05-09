@@ -4,7 +4,6 @@
 
 class Network {
 private:
-	int Nlayers;
 	float delta = std::numeric_limits<float>::min();
 	std::vector<Matrix> Layers;
 	std::vector<Matrix> WeightsA;
@@ -12,6 +11,7 @@ private:
 	std::vector<Matrix> Biases;
 	std::vector<std::vector<Matrix>> Cost;
 public:
+	int Nlayers;
 	Network(std::vector<std::pair<int, int>> arrangement, float range);
 	Matrix evaluate();
 	void CalcCostDerivative(Matrix DesiredOutput, int stage);
