@@ -1,6 +1,5 @@
 #include "Matrix.h"
 #include <cstdio>
-#include <cassert>
 #include <ctime>
 #include <cstdlib>
 
@@ -29,7 +28,6 @@ int Matrix::lenght()
 
 Matrix::Matrix(int rows, int coulmns)
 {
-	assert(rows != 0 && coulmns != 0);
 	row = rows;
 	coulmn = coulmns;
 	start = new float[row*coulmn];
@@ -125,15 +123,11 @@ int Matrix::getcoulmns() const
 
 float Matrix::get(int rows, int coulmns)
 {
-	assert(rows < row);
-	assert(coulmns < coulmn);
 	return start[rows*coulmn + coulmns];
 }
 
 void Matrix::put(int rows, int coulmns, float value)
 {
-	assert(rows < row);
-	assert(coulmns < coulmn);
 	start[rows*coulmn + coulmns] = value;
 }
 
@@ -150,9 +144,6 @@ void Matrix::print()
 
 float Matrix::dot(Matrix & rhs)
 {
-	assert(row == 1);
-	assert(rhs.coulmn == 1);
-	assert(coulmn == rhs.row);
 	float retn = 0;
 	for (int i = 0; i < coulmn; i++) {
 		float q = 1;
@@ -164,8 +155,6 @@ float Matrix::dot(Matrix & rhs)
 
 Matrix Matrix::CalcVariance(Matrix & rhs)
 {
-	assert(rhs.row == row);
-	assert(rhs.coulmn == coulmn);
 	Matrix rtn = Matrix(row, coulmn);
 	for (int i = 0; i < row*coulmn; i++) {
 		rtn.start[i] = rhs.start[i] - start[i];

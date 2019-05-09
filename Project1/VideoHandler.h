@@ -1,39 +1,43 @@
-#pragma once
-#include "Matrix.h"
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <string>
+#include "Matrix.h"
 #include <sstream>
 
+using namespace cv;
 using namespace std;
 
-std::pair<vector<Matrix>,int> read_video(string filename,pair<int,int> dimensions) {
+vector<Matrix> read_video(string filename, pair<int, int> dimensions) {
 	vector<Matrix> frames;
-	int nframes;
-	try {
-		//open the video file
-		cv::VideoCapture cap(filename); // open the video file
-		if (!cap.isOpened()) {  // check if we succeeded
-			CV_Error(CV_StsError, "Can not open Video file");
-		}
-		nframes = cap.get(CV_CAP_PROP_FRAME_COUNT);
-		for (int frameNum = 0; frameNum < nframes; frameNum++)
-		{
-			cv::Mat frame;
-			Matrix Frame = Matrix(dimensions.first, dimensions.second);
-			cap >> frame; // get the next frame from video
-			cv::Mat greyscale;
-			cv::cvtColor(frame, greyscale, CV_RGB2GRAY);
-			for (int i = 0; i < dimensions.first; i++) {
-				for (int j = 0; j < dimensions.second; j++) {
-					Frame.put(i, j, float(greyscale.at<int>(i, j)));
-				}
+	VideoCapture cap(filename); // video
+	if (!cap.isOpened())  
+	{
+	    cout << "Cannot open the video file" << endl;
+	}
+	
+	while (true)
+	{
+		Matrix Frame = Matrix(dimensions.first, dimensions.second);
+	    Mat frame;
+	    Mat Gray_frame;
+	    bool bSuccess = cap.read(frame); // read a new frame from video
+	
+	    if (!bSuccess) 
+	    {
+	        cout << "Cannot read the frame from video file" << endl;
+	        break;
+	    }
+		cv::cvtColor(frame, Gray_frame, CV_RGB2GRAY);
+		for (int i = 0; i < dimensions.first; i++) {
+			for (int j = 0; j < dimensions.second; j++) {
+				Frame.put(i, j, float(Gray_frame.at<int>(i, j)));
 			}
-			frames.push_back(Frame);
 		}
+		frames.push_back(Frame);
 	}
-	catch (cv::Exception& e) {
-		cerr << e.msg << endl;
-		exit(1);
-	}
-	return std::make_pair(frames,nframes);
+	
+	return frames;
+	
 }

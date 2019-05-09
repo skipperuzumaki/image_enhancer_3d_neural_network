@@ -1,5 +1,7 @@
 #include "Network.h"
-#include <cassert>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
 
 void Network::instantialise(Matrix init)
 {
@@ -141,4 +143,3 @@ void Network::backprop(float cost)
 		}
 	}
 }
-
