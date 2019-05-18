@@ -36,7 +36,7 @@ Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
 	Nlayers = int(arrangement.size());
 	Layers.clear();
 	for (int i = 0; i < Nlayers; i++) {
-		Layers.push_back(Matrix(arrangement.at(i).first, arrangement.at(i).second));
+		Layers.emplace_back(Matrix(arrangement.at(i).first, arrangement.at(i).second));
 	}
 	Cost.push_back(Layers);
 	Biases.push_back(Matrix(0, 0));
@@ -157,7 +157,7 @@ std::vector<std::pair<int, int>> Network::Bakval(bool A, int i, int j, int extnt
 void Network::backprop(float cost)
 {
 	delta = cost / 10;
-	for (int l = 0; l < Nlayers; l++) {
+	for (int l = 0; l < Nlayers-1; l++) {
 		for (int i = 0; i < Biases.at(l).getrows(); i++) {
 			for (int j = 0; j < Biases.at(l).getcoulmns(); j++) {
 				Biases.at(l).put(i, j, Biases.at(l).get(i, j) + Cost.at(3).at(l).get(1, j)*delta);
@@ -172,6 +172,11 @@ void Network::backprop(float cost)
 			for (int j = 0; j < WeightsB.at(l).getcoulmns(); j++) {
 				WeightsB.at(l).put(i, j, WeightsB.at(l).get(i, j) + Cost.at(1).at(l).get(1, j)*delta);
 			}
+		}
+	}
+	for (int i = 0; i < Biases.at(Nlayers-1).getrows(); i++) {
+		for (int j = 0; j < Biases.at(Nlayers-1).getcoulmns(); j++) {
+			Biases.at(Nlayers-1).put(i, j, Biases.at(Nlayers-1).get(i, j) + Cost.at(3).at(Nlayers-1).get(1, j)*delta);
 		}
 	}
 }

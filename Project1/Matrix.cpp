@@ -37,7 +37,6 @@ Matrix::Matrix(const Matrix &rhs)
 {
 	row = rhs.getrows();
 	coulmn = rhs.getcoulmns();
-	delete[] start;
 	start = new float[row*coulmn];
 	for (int i = 0; i < row*coulmn; i++) {
 		start[i] = rhs.start[i];
