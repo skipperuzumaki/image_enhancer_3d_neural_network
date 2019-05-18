@@ -49,14 +49,14 @@ Matrix::~Matrix()
 	start = nullptr;
 }
 
-Matrix* Matrix::operator*(Matrix & rhs)
+Matrix Matrix::operator*(Matrix & rhs)
 {
 	if (getcoulmns() != rhs.getrows()) {
-		return nullptr;
+		return Matrix(0, 0);
 	}
 	int x = getrows();
 	int y = rhs.getcoulmns();
-	Matrix* rtn = new Matrix(x, y);
+	Matrix rtn = Matrix(x, y);
 	for (int i = 0; i < x; i++) {
 		for (int j = 0; j < y; j++) {
 			Matrix row_t = bringrow(i);

@@ -13,9 +13,9 @@ public:
 	int lenght();
 	Matrix(int rows, int coulmns);
 	Matrix(const Matrix &rhs);
-	Matrix* operator *(Matrix &rhs);
-	Matrix* operator +(Matrix &rhs);
-	Matrix* operator =(const Matrix &rhs);
+	Matrix operator *(Matrix &rhs);
+	Matrix operator +(Matrix &rhs);
+	Matrix operator =(const Matrix &rhs);
 	bool operator ==(const Matrix &rhs);
 	int getrows() const;
 	int getcoulmns() const;
@@ -23,11 +23,11 @@ public:
 	void put(int row, int coulmn, float value);
 	void print();
 	float dot(Matrix &rhs);
-	Matrix* CalcVariance(Matrix* rhs);
+	Matrix CalcVariance(Matrix &rhs);
 	float Maxval();
 	void Percentise(float maxval);
 	void Setall(float val);
-	Matrix* Invert();
+	Matrix Invert();
 	void Sigmoid();
 	void RandomlyInitialise(float range);
 };
