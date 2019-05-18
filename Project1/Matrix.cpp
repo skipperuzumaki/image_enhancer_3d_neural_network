@@ -62,27 +62,27 @@ Matrix Matrix::operator*(Matrix & rhs)
 			Matrix row_t = bringrow(i);
 			Matrix coulmn_t = rhs.bringcoulmn(j);
 			float value = row_t.dot(coulmn_t);
-			rtn->put(i, j, value);
+			rtn.put(i, j, value);
 		}
 	}
 	return rtn;
 }
 
-Matrix* Matrix::operator+(Matrix & rhs)
+Matrix Matrix::operator+(Matrix & rhs)
 {
 	if ((getrows() != rhs.getrows()) || (getcoulmns() != rhs.getcoulmns())) {
-		return nullptr;
+		return Matrix(0,0);
 	}
-	Matrix* rtn = new Matrix(getrows(), getcoulmns());
+	Matrix rtn = Matrix(getrows(), getcoulmns());
 	for (int ix = 0; ix < getrows(); ix++) {
 		for (int iy = 0; iy < getcoulmns(); iy++) {
-			rtn->put(ix, iy, (get(ix, iy) + rhs.get(ix, iy)));
+			rtn.put(ix, iy, (get(ix, iy) + rhs.get(ix, iy)));
 		}
 	}
 	return rtn;
 }
 
-Matrix* Matrix::operator=(const Matrix & rhs)
+Matrix Matrix::operator=(const Matrix & rhs)
 {
 	row = rhs.row;
 	coulmn = rhs.coulmn;
@@ -91,7 +91,7 @@ Matrix* Matrix::operator=(const Matrix & rhs)
 	for (int i = 0; i < row*coulmn; i++) {
 		start[i] = rhs.start[i];
 	}
-	return this;
+	return *this;
 }
 
 bool Matrix::operator==(const Matrix & rhs)
@@ -152,11 +152,11 @@ float Matrix::dot(Matrix & rhs)
 	return retn;
 }
 
-Matrix* Matrix::CalcVariance(Matrix* rhs)
+Matrix Matrix::CalcVariance(Matrix &rhs)
 {
-	Matrix* rtn = new Matrix(row, coulmn);
+	Matrix rtn = Matrix(row, coulmn);
 	for (int i = 0; i < row*coulmn; i++) {
-		rtn->start[i] = rhs->start[i] - start[i];
+		rtn.start[i] = rhs.start[i] - start[i];
 	}
 	return rtn;
 }
@@ -187,11 +187,11 @@ void Matrix::Setall(float val)
 	}
 }
 
-Matrix* Matrix::Invert()
+Matrix Matrix::Invert()
 {
-	Matrix* rtn = new Matrix(row, coulmn);
+	Matrix rtn = Matrix(row, coulmn);
 	for (int i = 0; i < row*coulmn; i++) {
-		rtn->start[i] = -start[i];
+		rtn.start[i] = -start[i];
 	}
 	return rtn;
 }
