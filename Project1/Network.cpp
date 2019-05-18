@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 
-void Network::instantialise(Matrix init)
+void Network::instantialise(Matrix* init)
 {
 	Layers.at(0) = init;
 }
@@ -36,19 +36,19 @@ Network::Network(std::vector<std::pair<int, int>> arrangement,float range)
 	Nlayers = int(arrangement.size());
 	Layers.clear();
 	for (int i = 0; i < Nlayers; i++) {
-		Layers.push_back(Matrix(arrangement.at(i).first, arrangement.at(i).second));
+		Layers.push_back(new Matrix(arrangement.at(i).first, arrangement.at(i).second));
 	}
 	Cost.push_back(Layers);
-	Biases.push_back(Matrix(0, 0));
+	Biases.push_back(new Matrix(0, 0));
 	for (int i = 1; i < Nlayers; i++) {
-		Matrix T1 = Matrix(Layers.at(i - 1).getcoulmns(), Layers.at(i).getrows());
-		T1.RandomlyInitialise(range);
+		Matrix* T1 = new Matrix(Layers[(i - 1)]->getcoulmns(), Layers[(i)]->getrows());
+		T1->RandomlyInitialise(range);
 		WeightsA.push_back(T1);
-		Matrix T2 = Matrix(Layers.at(i).getrows(), Layers.at(i - 1).getcoulmns());
-		T2.RandomlyInitialise(range);
+		Matrix* T2 = new Matrix(Layers[(i)]->getrows(), Layers[(i - 1)]->getcoulmns());
+		T2->RandomlyInitialise(range);
 		WeightsB.push_back(T2);
-		Matrix T3 = Matrix(Layers.at(i).getrows(), Layers.at(i).getcoulmns());
-		T3.RandomlyInitialise(range);
+		Matrix* T3 = new Matrix(Layers[(i)]->getrows(), Layers[(i)]->getcoulmns());
+		T3->RandomlyInitialise(range);
 		Biases.push_back(T3);
 	}
 	Cost.push_back(WeightsA);
@@ -65,71 +65,70 @@ Network::Network(const Network & rhs)
 	Biases = rhs.Biases;
 }
 
-Matrix Network::evaluate()
+Matrix* Network::evaluate()
 {
 	for (int i = 0; i < Nlayers-1; i++) {
-		Matrix T1 = Layers.at(i) * WeightsA.at(i);
-		Matrix T2 = WeightsB.at(i) * T1;
-		Matrix T3 = T2 + Biases.at(i + 1);
-		T3.Sigmoid();
-		Layers.at(i + 1) = T3;
+		Matrix* T1 = (*Layers[(i)]) * (*WeightsA[(i)]);
+		Matrix* T2 = (*WeightsB[(i)]) * (*T1);
+		Matrix* T3 = (*T2) + (*Biases[(i + 1)]);
+		T3->Sigmoid();
+		Layers[(i + 1)] = T3;
 	}
-	return Layers.at(Nlayers - 1);
+	return Layers[(Nlayers - 1)];
 }
 
-void Network::CalcCostDerivative(Matrix DesiredOutput, int stage)
+void Network::CalcCostDerivative(Matrix* DesiredOutput, int stage)
 {
 	if (stage==1) {
 		return;
 	}
-	Cost.at(0).at(stage) = Layers.at(stage).CalcVariance(DesiredOutput);
-	Cost.at(0).at(stage).Percentise(Cost.at(0).at(stage).Maxval());
-	Cost.at(1).at(stage-1).Setall(0.0f);
-	Cost.at(2).at(stage-1).Setall(0.0f);
-	for (int i = 0; i < Layers.at(stage - 1).getrows(); i++) {
-		for (int j = 0; j < Layers.at(stage - 1).getcoulmns(); j++) {
-			for (int k = 0; k < Cost.at(0).at(stage).getrows(); k++) {
-				for (int l = 0; l < Cost.at(0).at(stage).getcoulmns(); l++) {
+	Cost[(0)][(stage)] = Layers[(stage)]->CalcVariance(DesiredOutput);
+	Cost[(0)][(stage)]->Percentise(Cost[(0)][(stage)]->Maxval());
+	Cost[(1)][(stage-1)]->Setall(0.0f);
+	Cost[(2)][(stage-1)]->Setall(0.0f);
+	for (int i = 0; i < Layers[(stage - 1)]->getrows(); i++) {
+		for (int j = 0; j < Layers[(stage - 1)]->getcoulmns(); j++) {
+			for (int k = 0; k < Cost[(0)][(stage)]->getrows(); k++) {
+				for (int l = 0; l < Cost[(0)][(stage)]->getcoulmns(); l++) {
 					auto W = Getaw(std::make_pair(i, j), std::make_pair(k, l));
-					Cost.at(1).at(stage - 1).put(W.first.first, W.first.second, Cost.at(1).at(stage - 1).get(W.first.first, W.first.second)+Cost.at(0).at(stage).get(k, l));
-					Cost.at(2).at(stage - 1).put(W.second.first, W.second.second, Cost.at(1).at(stage - 1).get(W.second.first, W.second.second)+Cost.at(0).at(stage).get(k, l));
-					Cost.at(1).at(stage - 1).Percentise(Cost.at(1).at(stage - 1).Maxval());
-					Cost.at(2).at(stage - 1).Percentise(Cost.at(2).at(stage - 1).Maxval());
+					Cost[(1)][(stage - 1)]->put(W.first.first, W.first.second, Cost[(1)][(stage - 1)]->get(W.first.first, W.first.second)+Cost[(0)][(stage)]->get(k, l));
+					Cost[(2)][(stage - 1)]->put(W.second.first, W.second.second, Cost[(1)][(stage - 1)]->get(W.second.first, W.second.second)+Cost[(0)][(stage)]->get(k, l));
+					Cost[(1)][(stage - 1)]->Percentise(Cost[(1)][(stage - 1)]->Maxval());
+					Cost[(2)][(stage - 1)]->Percentise(Cost[(2)][(stage - 1)]->Maxval());
 				}
 			}
 		}
 	}
-	Cost.at(3).at(stage) = Cost.at(0).at(stage).Invert();
-	Cost.at(0).at(stage - 1).Setall(0.0f);
-	for (int i = 0; i < Cost.at(1).at(stage - 1).getrows(); i++) {
-		for (int j = 0; j < Cost.at(1).at(stage - 1).getcoulmns(); j++) {
-			auto k = Bakval(true, i, j, Cost.at(1).at(stage - 1).getrows(), Cost.at(1).at(stage - 1).getcoulmns());
+	Cost[(3)][(stage)] = Cost[(0)][(stage)]->Invert();
+	Cost[(0)][(stage - 1)]->Setall(0.0f);
+	for (int i = 0; i < Cost[(1)][(stage - 1)]->getrows(); i++) {
+		for (int j = 0; j < Cost[(1)][(stage - 1)]->getcoulmns(); j++) {
+			auto k = Bakval(true, i, j, Cost[(1)][(stage - 1)]->getrows(), Cost[(1)][(stage - 1)]->getcoulmns());
 			for (int l = 0; l < k.size(); l++) {
-				Cost.at(0).at(stage - 1).put(k.at(i).first, k.at(i).second, Cost.at(0).at(stage - 1).get(k.at(i).first, k.at(i).second)+std::abs(Cost.at(1).at(stage - 1).get(i, j)));
+				Cost[(0)][(stage - 1)]->put(k.at(i).first, k.at(i).second, Cost[(0)][(stage - 1)]->get(k.at(i).first, k.at(i).second)+std::abs(Cost[(1)][(stage - 1)]->get(i, j)));
 			}
 		}
 	}
-	for (int i = 0; i < Cost.at(2).at(stage - 1).getrows(); i++) {
-		for (int j = 0; j < Cost.at(2).at(stage - 1).getcoulmns(); j++) {
-			auto k = Bakval(true, i, j, Cost.at(2).at(stage - 1).getrows(), Cost.at(2).at(stage - 1).getcoulmns());
+	for (int i = 0; i < Cost[(2)][(stage - 1)]->getrows(); i++) {
+		for (int j = 0; j < Cost[(2)][(stage - 1)]->getcoulmns(); j++) {
+			auto k = Bakval(true, i, j, Cost[(2)][(stage - 1)]->getrows(), Cost[(2)][(stage - 1)]->getcoulmns());
 			for (int l = 0; l < k.size(); l++) {
-				Cost.at(0).at(stage - 1).put(k.at(i).first, k.at(i).second, Cost.at(0).at(stage - 1).get(k.at(i).first, k.at(i).second)+std::abs(Cost.at(2).at(stage - 1).get(i, j)));
+				Cost[(0)][(stage - 1)]->put(k.at(i).first, k.at(i).second, Cost[(0)][(stage - 1)]->get(k.at(i).first, k.at(i).second)+std::abs(Cost[(2)][(stage - 1)]->get(i, j)));
 			}
 		}
 	}
 	CalcCostDerivative(Cost.at(0).at(stage - 1), stage - 1);
 }
 
-float Network::CalcCost(Matrix DesiredOutput)
+float Network::CalcCost(Matrix* DesiredOutput)
 {
 	float rtn = 0.0f;
-	Matrix T = Layers.at(Nlayers-1).CalcVariance(DesiredOutput);
-	for (int i = 0; i < T.getrows(); i++) {
-		for (int j = 0; j < T.getcoulmns(); j++) {
-			rtn = rtn + (T.get(i, j)*T.get(i, j));
+	Matrix* T = Layers[(Nlayers-1)]->CalcVariance(DesiredOutput);
+	for (int i = 0; i < T->getrows(); i++) {
+		for (int j = 0; j < T->getcoulmns(); j++) {
+			rtn = rtn + (T->get(i, j)*T->get(i, j));
 		}
 	}
-	rtn = rtn / (T.getrows()*T.getcoulmns());
 	return std::sqrt(rtn);
 }
 
@@ -157,21 +156,26 @@ std::vector<std::pair<int, int>> Network::Bakval(bool A, int i, int j, int extnt
 void Network::backprop(float cost)
 {
 	delta = cost / 10;
-	for (int l = 0; l < Nlayers; l++) {
-		for (int i = 0; i < Biases.at(l).getrows(); i++) {
-			for (int j = 0; j < Biases.at(l).getcoulmns(); j++) {
-				Biases.at(l).put(i, j, Biases.at(l).get(i, j) + Cost.at(3).at(l).get(1, j)*delta);
+	for (int l = 0; l < Nlayers-1; l++) {
+		for (int i = 0; i < Biases[(l)]->getrows(); i++) {
+			for (int j = 0; j < Biases[(l)]->getcoulmns(); j++) {
+				Biases[(l)]->put(i, j, Biases[(l)]->get(i, j) + Cost[(3)][(l)]->get(1, j)*delta);
 			}
 		}
-		for (int i = 0; i < WeightsA.at(l).getrows(); i++) {
-			for (int j = 0; j < WeightsA.at(l).getcoulmns(); j++) {
-				WeightsA.at(l).put(i, j, WeightsA.at(l).get(i, j) + Cost.at(1).at(l).get(1, j)*delta);
+		for (int i = 0; i < WeightsA[(l)]->getrows(); i++) {
+			for (int j = 0; j < WeightsA[(l)]->getcoulmns(); j++) {
+				WeightsA[(l)]->put(i, j, WeightsA[(l)]->get(i, j) + Cost[(1)][(l)]->get(1, j)*delta);
 			}
 		}
-		for (int i = 0; i < WeightsB.at(l).getrows(); i++) {
-			for (int j = 0; j < WeightsB.at(l).getcoulmns(); j++) {
-				WeightsB.at(l).put(i, j, WeightsB.at(l).get(i, j) + Cost.at(1).at(l).get(1, j)*delta);
+		for (int i = 0; i < WeightsB[(l)]->getrows(); i++) {
+			for (int j = 0; j < WeightsB[(l)]->getcoulmns(); j++) {
+				WeightsB[(l)]->put(i, j, WeightsB[(l)]->get(i, j) + Cost[(1)][(l)]->get(1, j)*delta);
 			}
+		}
+	}
+	for (int i = 0; i < Biases[(Nlayers-1)]->getrows(); i++) {
+		for (int j = 0; j < Biases[(Nlayers-1)]->getcoulmns(); j++) {
+			Biases[(Nlayers-1)]->put(i, j, Biases[(Nlayers-1)]->get(i, j) + Cost[(3)][(Nlayers-1)]->get(1, j)*delta);
 		}
 	}
 }
