@@ -4,22 +4,21 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
-Matrix frametomatrix(cv::Mat frame, pair<int, int> dimensions) {
+Matrix frametomatrix(cv::Mat frame, std::pair<int, int> dimensions) {
 	cv::Mat greyscale;
 	Matrix Frame = Matrix(dimensions.first, dimensions.second);
 	cv::cvtColor(frame, greyscale, CV_RGB2GRAY);
+	uchar* mp = &greyscale.at<uchar>(0);
 	for (int i = 0; i < dimensions.first; i++) {
 		for (int j = 0; j < dimensions.second; j++) {
-			Frame.put(i, j, float(greyscale.at<int>(i, j)));
+			Frame.put(i, j, float(mp[i*dimensions.second + j]));
 		}
 	}
 	return Frame;
 }
 
-vector<Matrix> read_video(string filename,pair<int,int> dimensions) {
-	vector<Matrix> frames;
+std::vector<Matrix> read_video(std::string filename,std::pair<int,int> dimensions) {
+	std::vector<Matrix> frames;
 	try {
 		//open the video file
 		cv::VideoCapture cap(filename); // open the video file
@@ -36,7 +35,7 @@ vector<Matrix> read_video(string filename,pair<int,int> dimensions) {
 		}
 	}
 	catch (cv::Exception& e) {
-		cerr << e.msg << endl;
+		std::cerr << e.msg << std::endl;
 		exit(1);
 	}
 	return frames;
