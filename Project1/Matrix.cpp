@@ -211,3 +211,4 @@ void Matrix::RandomlyInitialise(float range)
 		start[i] = float(r);
 	}
 }
+
